@@ -1,1 +1,1066 @@
-# Finansije
+# Finansije[index (1).html](https://github.com/user-attachments/files/26507247/index.1.html)
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Moje Finansije</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0e0c;--surface:#1a1916;--surface2:#242320;--border:#2e2c28;--gold:#d4a853;--gold-light:#e8c97a;--gold-dim:rgba(212,168,83,0.12);--gold-border:rgba(212,168,83,0.25);--red:#e05555;--red-dim:rgba(224,85,85,0.12);--green:#5cb87a;--green-dim:rgba(92,184,122,0.12);--text:#f0ece3;--text-dim:#8a8478;--text-mid:#bbb4a8;--radius:16px;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;max-width:430px;margin:0 auto;padding-bottom:100px;}
+.header{padding:28px 24px 12px;display:flex;justify-content:space-between;align-items:flex-start;}
+.greeting{font-size:13px;color:var(--text-dim);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;}
+.header h1{font-family:'DM Serif Display',serif;font-size:28px;}
+.header h1 span{color:var(--gold);font-style:italic;}
+.sync-bar{display:flex;align-items:center;justify-content:center;gap:8px;padding:2px 24px 8px;font-size:12px;color:var(--text-dim);}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;transition:background .3s;}
+.sync-dot.syncing{background:var(--gold);animation:pulse 1s infinite;}
+.sync-dot.error{background:var(--red);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* MONTH NAV STRIP */
+.month-nav{display:flex;align-items:center;padding:0 16px 14px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;}
+.month-nav::-webkit-scrollbar{display:none;}
+.mn-btn{flex-shrink:0;padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:none;color:var(--text-dim);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;margin-right:6px;}
+.mn-btn:hover{border-color:var(--gold-border);color:var(--gold);}
+.mn-btn.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);font-weight:600;}
+.mn-btn.future{border-style:dashed;opacity:.8;}
+
+.setup-banner{margin:4px 24px 18px;background:linear-gradient(135deg,#2a2310,#1e1c18);border:1px solid var(--gold-border);border-radius:20px;padding:20px 22px;display:flex;align-items:center;gap:14px;cursor:pointer;}
+.sb-icon{font-size:30px;flex-shrink:0;}
+.sb-title{font-family:'DM Serif Display',serif;font-size:18px;color:var(--gold);}
+.sb-sub{font-size:13px;color:var(--text-dim);margin-top:2px;}
+.future-banner{margin:4px 24px 18px;background:linear-gradient(135deg,#181c2a,#1a1e18);border:1px solid rgba(91,155,213,0.3);border-radius:20px;padding:16px 20px;display:flex;align-items:center;gap:14px;}
+.fb-icon{font-size:26px;flex-shrink:0;}
+.fb-title{font-size:14px;font-weight:600;color:#5b9bd5;margin-bottom:2px;}
+.fb-sub{font-size:12px;color:var(--text-dim);}
+
+.hero-card{margin:4px 24px 14px;background:linear-gradient(135deg,#1e1c18,#252318);border:1px solid var(--border);border-radius:20px;padding:22px;position:relative;overflow:hidden;}
+.hero-card::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;background:radial-gradient(circle,rgba(212,168,83,.08),transparent 70%);border-radius:50%;pointer-events:none;}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
+.hl{font-size:12px;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
+.ha{font-family:'DM Serif Display',serif;font-size:42px;line-height:1;}
+.ha .rsd{font-size:20px;color:var(--gold);margin-right:4px;}
+.hs{font-size:12px;color:var(--text-dim);margin-top:6px;line-height:1.8;}
+.hs .inc{color:var(--green);}
+.salary-chip{background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:10px;padding:6px 10px;text-align:right;cursor:pointer;flex-shrink:0;}
+.sc-lbl{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;}
+.sc-val{font-family:'DM Serif Display',serif;font-size:16px;color:var(--gold);}
+.daily-strip{background:var(--gold-dim);border:1px solid rgba(212,168,83,.15);border-radius:12px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;}
+.dl-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);font-weight:600;}
+.dl-amt{font-family:'DM Serif Display',serif;font-size:26px;color:var(--gold);}
+.dl-sub{font-size:11px;color:var(--text-dim);text-align:right;line-height:1.6;}
+.month-prog{margin:0 24px 18px;display:flex;align-items:center;gap:10px;}
+.prog-bar{flex:1;height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:2px;transition:width .4s ease;}
+.prog-lbl{font-size:11px;color:var(--text-dim);white-space:nowrap;}
+.sec-title{padding:0 24px 10px;display:flex;justify-content:space-between;align-items:center;}
+.sec-title span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);}
+.sec-btn{background:var(--gold-dim);border:1px solid rgba(212,168,83,.2);color:var(--gold);font-size:11px;font-family:'DM Sans',sans-serif;font-weight:500;padding:4px 10px;border-radius:10px;cursor:pointer;}
+.sec-btn:hover{background:rgba(212,168,83,.2);}
+.sec-btn.green{background:rgba(92,184,122,.12);border-color:rgba(92,184,122,.25);color:var(--green);}
+.sec-btn.green:hover{background:rgba(92,184,122,.2);}
+
+.fixed-list{padding:0 24px;display:flex;flex-direction:column;gap:8px;margin-bottom:24px;}
+.fixed-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s;}
+.fixed-card:hover{border-color:var(--gold-border);}
+.fixed-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.fixed-info{flex:1;min-width:0;}
+.fixed-name{font-size:14px;font-weight:500;margin-bottom:6px;}
+.fixed-bar-wrap{display:flex;align-items:center;gap:8px;}
+.fixed-bar{flex:1;height:3px;background:var(--surface2);border-radius:2px;overflow:hidden;}
+.fixed-bar-fill{height:100%;border-radius:2px;transition:width .4s;}
+.fixed-bar-lbl{font-size:11px;color:var(--text-dim);white-space:nowrap;}
+.fixed-amount{font-family:'DM Serif Display',serif;font-size:18px;flex-shrink:0;}
+.fixed-rsd{font-size:11px;color:var(--text-dim);font-family:'DM Sans',sans-serif;font-weight:400;}
+
+/* INCOME LIST */
+.income-list{padding:0 24px;display:flex;flex-direction:column;gap:8px;margin-bottom:24px;}
+.income-item{background:var(--surface);border:1px solid rgba(92,184,122,.2);border-radius:13px;padding:12px 14px;display:flex;align-items:center;gap:11px;}
+.income-icon{width:34px;height:34px;border-radius:9px;background:rgba(92,184,122,.15);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.income-info{flex:1;min-width:0;}
+.income-desc{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.income-meta{font-size:11px;color:var(--text-dim);margin-top:2px;}
+.income-amt{font-family:'DM Serif Display',serif;font-size:17px;color:var(--green);flex-shrink:0;}
+.income-del{background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer;padding:2px 4px;line-height:1;flex-shrink:0;}
+
+.free-list{padding:0 24px;display:flex;flex-direction:column;gap:8px;margin-bottom:24px;}
+.free-item{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:12px 14px;display:flex;align-items:center;gap:11px;}
+.free-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.free-info{flex:1;min-width:0;}
+.free-desc{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.free-meta{font-size:11px;color:var(--text-dim);margin-top:2px;}
+.free-amt{font-family:'DM Serif Display',serif;font-size:17px;color:var(--red);flex-shrink:0;}
+.free-del{background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer;padding:2px 4px;line-height:1;flex-shrink:0;}
+
+.stats-wrap{padding:0 24px;display:flex;flex-direction:column;gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+.stat-title{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:14px;}
+.stat-big{text-align:center;padding:10px 0;}
+.stat-big-num{font-family:'DM Serif Display',serif;font-size:40px;color:var(--gold);}
+.stat-big-lbl{font-size:12px;color:var(--text-dim);margin-top:4px;}
+.bar-chart{display:flex;flex-direction:column;gap:8px;}
+.bar-row{display:flex;align-items:center;gap:10px;}
+.bar-label{font-size:12px;color:var(--text-mid);width:80px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bar-track{flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;transition:width .5s ease;}
+.bar-val{font-size:12px;color:var(--text-dim);width:70px;text-align:right;flex-shrink:0;}
+.month-compare-row{display:flex;gap:8px;flex-wrap:wrap;}
+.mc-item{flex:1;min-width:80px;background:var(--surface2);border-radius:10px;padding:10px 12px;}
+.mc-month{font-size:11px;color:var(--text-dim);margin-bottom:4px;}
+.mc-amt{font-family:'DM Serif Display',serif;font-size:16px;}
+.mc-sub{font-size:10px;color:var(--text-dim);margin-top:2px;}
+.ai-insight{background:linear-gradient(135deg,#1e1c18,#252318);border:1px solid var(--gold-border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:12px;align-items:flex-start;}
+.ai-icon{font-size:22px;flex-shrink:0;margin-top:2px;}
+.ai-text{font-size:13px;color:var(--text-mid);line-height:1.7;}
+.ai-text strong{color:var(--gold);font-weight:600;}
+.tx-list{padding:0 24px;display:flex;flex-direction:column;gap:8px;}
+.tx-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:13px;}
+.tx-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.tx-info{flex:1;min-width:0;}
+.tx-desc{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tx-meta{font-size:11px;color:var(--text-dim);margin-top:2px;}
+.tx-amt{font-family:'DM Serif Display',serif;font-size:16px;flex-shrink:0;}
+.tx-amt.neg{color:var(--red);}
+.tx-amt.pos{color:var(--green);}
+.badge{font-size:10px;padding:2px 7px;border-radius:6px;font-weight:500;white-space:nowrap;}
+.badge-fixed{background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-border);}
+.badge-free{background:var(--red-dim);color:var(--red);border:1px solid rgba(224,85,85,.2);}
+.badge-income{background:rgba(92,184,122,.12);color:var(--green);border:1px solid rgba(92,184,122,.25);}
+.month-switcher{display:flex;align-items:center;justify-content:center;gap:12px;padding:0 24px 16px;}
+.ms-btn{background:none;border:1px solid var(--border);color:var(--text-dim);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.ms-btn:hover{border-color:var(--gold-border);color:var(--gold);}
+.ms-label{font-family:'DM Serif Display',serif;font-size:18px;flex:1;text-align:center;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
+.overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:20px 24px 44px;width:100%;max-width:430px;animation:slideUp .22s ease;max-height:92vh;overflow-y:auto;}
+@keyframes slideUp{from{transform:translateY(100%);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;}
+.modal h2{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:4px;}
+.modal-sub{font-size:13px;color:var(--text-dim);margin-bottom:20px;}
+.type-toggle{display:flex;gap:8px;margin-bottom:18px;}
+.tt-btn{flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--border);background:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;color:var(--text-dim);transition:all .15s;}
+.tt-btn.sel-exp{background:var(--red-dim);border-color:var(--red);color:var(--red);}
+.tt-btn.sel-inc{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+.inp-group{margin-bottom:15px;}
+.inp-label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:6px;}
+.inp{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none;}
+.inp:focus{border-color:var(--gold);}
+.inp::placeholder{color:var(--text-dim);}
+.inp-money{position:relative;}
+.inp-money .rp{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-family:'DM Serif Display',serif;font-size:17px;color:var(--gold);pointer-events:none;}
+.inp-money .inp{padding-left:36px;font-family:'DM Serif Display',serif;font-size:26px;}
+.btn{width:100%;padding:15px;border-radius:12px;border:none;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s;margin-top:6px;}
+.btn-gold{background:var(--gold);color:#0f0e0c;}
+.btn-gold:hover{background:var(--gold-light);}
+.btn-green{background:var(--green);color:#0f0e0c;}
+.btn-green:hover{background:#72d492;}
+.btn-ghost{background:var(--surface2);color:var(--text-dim);margin-top:8px;}
+.btn-danger{width:100%;padding:13px;border-radius:12px;border:1px solid var(--red);background:none;color:var(--red);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;}
+.cat-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px;}
+.cat-chip{background:var(--surface2);border:1.5px solid var(--border);color:var(--text-mid);font-family:'DM Sans',sans-serif;font-size:13px;padding:7px 13px;border-radius:20px;cursor:pointer;transition:all .15s;}
+.cat-chip.sel{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
+.emoji-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:14px;}
+.e-btn{background:var(--surface2);border:2px solid transparent;border-radius:9px;padding:6px 3px;font-size:19px;cursor:pointer;text-align:center;transition:all .12s;}
+.e-btn.sel{border-color:var(--gold);background:var(--gold-dim);}
+.color-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.c-btn{width:28px;height:28px;border-radius:7px;border:2.5px solid transparent;cursor:pointer;transition:all .12s;}
+.c-btn.sel{border-color:var(--text);transform:scale(1.15);}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(15,14,12,.93);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;align-items:center;padding:12px 0 24px;z-index:100;}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;color:var(--text-dim);cursor:pointer;padding:4px 0;transition:color .15s;letter-spacing:.04em;}
+.nav-tab.active{color:var(--gold);}
+.nav-tab svg{width:22px;height:22px;stroke-width:2;}
+.nav-center{flex-shrink:0;width:52px;height:52px;background:var(--gold);border-radius:16px;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;color:#0f0e0c;font-size:28px;font-weight:300;box-shadow:0 4px 20px rgba(212,168,83,.3);margin-top:-12px;transition:all .15s;}
+.nav-center:active{transform:scale(.95);}
+.view{display:none;}
+.view.active{display:block;}
+.empty{text-align:center;padding:32px 24px;color:var(--text-dim);}
+.empty .ei{font-size:36px;margin-bottom:10px;}
+.empty p{font-size:13px;line-height:1.6;}
+.loading-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:999;}
+.ls-title{font-family:'DM Serif Display',serif;font-size:24px;color:var(--gold);}
+.ls-sub{font-size:13px;color:var(--text-dim);}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* DUAL BALANCE */
+.balance-row{display:flex;gap:10px;margin:4px 24px 14px;}
+.bal-card{flex:1;border-radius:16px;padding:14px 16px;}
+.bal-card.planned{background:linear-gradient(135deg,#1e1c18,#252318);border:1px solid var(--border);}
+.bal-card.real{background:linear-gradient(135deg,#0f1a14,#141f18);border:1px solid rgba(92,184,122,.25);}
+.bal-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:4px;}
+.bal-amt{font-family:'DM Serif Display',serif;font-size:24px;line-height:1.1;}
+.bal-amt.planned{color:var(--gold);}
+.bal-amt.real{color:var(--green);}
+.bal-sub{font-size:10px;color:var(--text-dim);margin-top:3px;}
+
+/* FIXED CARD WITH PAID TOGGLE */
+.fixed-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:10px;transition:border-color .2s;}
+.fixed-card.paid{border-color:rgba(92,184,122,.3);background:rgba(92,184,122,.04);}
+.fixed-paid-btn{width:28px;height:28px;border-radius:8px;border:2px solid var(--border);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all .15s;}
+.fixed-paid-btn.checked{background:var(--green);border-color:var(--green);color:#0f0e0c;}
+.fixed-edit-btn{background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer;padding:2px 4px;flex-shrink:0;line-height:1;}
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loading-screen">
+  <div class="spinner"></div>
+  <div class="ls-title">Moje Finansije</div>
+  <div class="ls-sub">Učitavam podatke...</div>
+</div>
+
+<!-- HOME -->
+<div class="view active" id="v-home">
+  <div class="header">
+    <div><div class="greeting">Zdravo 👋</div><h1>Moje <span>Finansije</span></h1></div>
+  </div>
+  <div class="sync-bar">
+    <div class="sync-dot" id="sync-dot"></div>
+    <span id="sync-lbl">Učitavam...</span>
+  </div>
+
+  <!-- MONTH NAV STRIP -->
+  <div class="month-nav" id="month-nav"></div>
+
+  <div class="setup-banner" id="setup-banner" onclick="openSalary()">
+    <div class="sb-icon">💰</div>
+    <div><div class="sb-title">Unesi platu</div><div class="sb-sub" id="setup-sub">Podesi mesečni prihod da kreneš</div></div>
+  </div>
+  <div class="future-banner" id="future-banner" style="display:none">
+    <div class="fb-icon">📅</div>
+    <div><div class="fb-title" id="future-title">Budući mesec</div><div class="fb-sub">Planiranje troškova i prihoda unapred</div></div>
+  </div>
+
+  <!-- DUAL BALANCE CARDS -->
+  <div class="balance-row" id="hero-card" style="display:none">
+    <div class="bal-card planned" onclick="openSalary()" style="cursor:pointer">
+      <div class="bal-lbl">📊 Planirano slobodno</div>
+      <div class="bal-amt planned"><span id="h-free">0</span></div>
+      <div class="bal-sub">Plata <span id="h-sal-chip">0</span> · Fiksni <span id="h-fixed">0</span></div>
+    </div>
+    <div class="bal-card real">
+      <div class="bal-lbl">💳 Realno stanje</div>
+      <div class="bal-amt real"><span id="h-real">0</span></div>
+      <div class="bal-sub">Plaćeno <span id="h-paid-count">0</span>/<span id="h-total-count">0</span> fiksnih</div>
+    </div>
+  </div>
+  <!-- DAILY STRIP -->
+  <div id="daily-wrap" style="display:none;margin:0 24px 14px;">
+    <div class="daily-strip">
+      <div>
+        <div class="dl-lbl" id="dl-lbl-txt">Dnevni budžet</div>
+        <div class="dl-amt"><span id="h-daily">0</span> <span style="font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text-dim)">RSD/dan</span></div>
+      </div>
+      <div class="dl-sub"><span id="h-days">0</span> <span id="h-days-lbl">dana do<br>kraja meseca</span></div>
+    </div>
+  </div>
+  <!-- INFO ROW -->
+  <div id="h-info-row" style="display:none;padding:0 24px 14px;font-size:12px;color:var(--text-dim);line-height:1.8;">
+    Potrošeno: <span id="h-spent">0</span> RSD
+    <span id="h-extra-inc-row" style="display:none"> · Prihodi: +<span id="h-extra-inc" style="color:var(--green)">0</span> RSD</span>
+  </div>
+
+  <div class="month-prog" id="month-prog" style="display:none">
+    <span class="prog-lbl" id="pg-lbl">0. dan</span>
+    <div class="prog-bar"><div class="prog-fill" id="pg-fill" style="width:0%"></div></div>
+    <span class="prog-lbl" id="pg-pct">0%</span>
+  </div>
+
+  <div class="sec-title" id="sec-fixed-title" style="display:none"><span>Fiksni troškovi</span><span style="font-size:10px;color:var(--text-dim);font-style:normal">iznosi za ovaj mesec</span></div>
+  <div class="fixed-list" id="fixed-list"></div>
+
+  <div id="sec-income-wrap" style="display:none">
+    <div class="sec-title">
+      <span>Dodatni prihodi</span>
+      <button class="sec-btn green" onclick="openAddEntry('income')">+ Prihod</button>
+    </div>
+    <div class="income-list" id="income-list"></div>
+  </div>
+
+  <div id="sec-free-wrap" style="display:none">
+    <div class="sec-title">
+      <span>Slobodni troškovi</span>
+      <button class="sec-btn" onclick="openAddEntry('expense')">+ Dodaj</button>
+    </div>
+    <div class="free-list" id="free-list"></div>
+  </div>
+</div>
+
+<!-- TRANSACTIONS -->
+<div class="view" id="v-tx">
+  <div class="header"><div><div class="greeting">Pregled</div><h1>Troš<span>kovi</span></h1></div></div>
+  <div class="month-switcher">
+    <button class="ms-btn" onclick="txMonthShift(-1)">‹</button>
+    <div class="ms-label" id="tx-month-lbl"></div>
+    <button class="ms-btn" onclick="txMonthShift(1)">›</button>
+  </div>
+  <div class="tx-list" id="tx-list"></div>
+</div>
+
+<!-- STATS -->
+<div class="view" id="v-stats">
+  <div class="header"><div><div class="greeting">Analiza</div><h1>Statis<span>tike</span></h1></div></div>
+  <div class="stats-wrap" id="stats-wrap"></div>
+</div>
+
+<!-- NAV -->
+<nav class="bottom-nav">
+  <button class="nav-tab active" id="nav-home" onclick="goView('home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Početna
+  </button>
+  <button class="nav-tab" id="nav-scan" onclick="openScan()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>
+    Skeniraj
+  </button>
+  <button class="nav-center" onclick="openAddEntry('expense')">+</button>
+  <button class="nav-tab" id="nav-tx" onclick="goView('tx')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+    Troškovi
+  </button>
+  <button class="nav-tab" id="nav-stats" onclick="goView('stats')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    Statistike
+  </button>
+</nav>
+
+<!-- MODAL: API Key setup -->
+<div class="overlay" id="m-apikey">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>🔑 API Ključ</h2>
+    <p class="modal-sub">Potreban za skeniranje računa. Čuva se samo u tvom browseru.</p>
+    <div class="inp-group">
+      <label class="inp-label">Anthropic API ključ</label>
+      <input class="inp" type="password" id="apikey-inp" placeholder="sk-ant-api03-...">
+    </div>
+    <div style="font-size:12px;color:var(--text-dim);margin-bottom:16px;line-height:1.6;">
+      🔒 Ključ se čuva isključivo lokalno u tvom browseru i šalje se direktno ka Anthropic API-ju pri skeniranju.
+    </div>
+    <button class="btn btn-gold" onclick="saveApiKey()">Sačuvaj i nastavi</button>
+    <button class="btn btn-ghost" onclick="closeM('m-apikey')">Odustani</button>
+  </div>
+</div>
+
+<!-- MODAL: Scan receipt -->
+<div class="overlay" id="m-scan">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>📸 Skeniraj račun</h2>
+    <p class="modal-sub" id="scan-sub">Fotografiši ili uploaduj sliku računa</p>
+    <div id="scan-upload-zone" style="border:2px dashed var(--border);border-radius:16px;padding:28px 20px;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:16px;" onclick="document.getElementById('scan-file-inp').click()" ondragover="event.preventDefault();this.style.borderColor='var(--gold)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="handleScanDrop(event)">
+      <div style="font-size:36px;margin-bottom:10px">📄</div>
+      <div style="font-size:14px;font-weight:500;color:var(--text-mid)">Klikni ili prevuci sliku računa</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:4px">JPG, PNG, WebP • ili fotografiši kamerom</div>
+    </div>
+    <input type="file" id="scan-file-inp" accept="image/*" capture="environment" style="display:none" onchange="handleScanFile(this)">
+    <div id="scan-preview-wrap" style="display:none;margin-bottom:16px;position:relative;">
+      <img id="scan-preview-img" style="width:100%;border-radius:12px;max-height:220px;object-fit:cover;">
+      <button onclick="clearScanPreview()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);border:none;color:white;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px;line-height:1;">×</button>
+    </div>
+    <div id="scan-loading" style="display:none;text-align:center;padding:20px;color:var(--text-dim);">
+      <div class="spinner" style="margin:0 auto 12px;"></div>
+      <div style="font-size:13px;">Čitam račun...</div>
+    </div>
+    <div id="scan-error" style="display:none;color:var(--red);font-size:13px;padding:10px 14px;background:var(--red-dim);border-radius:10px;margin-bottom:12px;"></div>
+    <div id="scan-result" style="display:none;background:var(--surface2);border-radius:14px;padding:16px;margin-bottom:16px;">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:12px;">Pronašla sam na računu ✓</div>
+      <div class="inp-group" style="margin-bottom:12px;">
+        <label class="inp-label">Opis</label>
+        <input class="inp" type="text" id="scan-desc-out">
+      </div>
+      <div class="inp-group" style="margin-bottom:12px;">
+        <label class="inp-label">Iznos (RSD)</label>
+        <div class="inp-money"><span class="rp">₽</span><input class="inp" type="number" id="scan-amt-out" inputmode="numeric"></div>
+      </div>
+      <div class="inp-group" style="margin-bottom:0;">
+        <label class="inp-label">Kategorija</label>
+        <div class="cat-chips" id="scan-cat-chips"></div>
+      </div>
+    </div>
+    <button class="btn btn-gold" id="scan-submit-btn" style="display:none" onclick="submitScan()">Dodaj trošak</button>
+    <button class="btn btn-gold" id="scan-analyze-btn" style="display:none" onclick="analyzeScan()">🔍 Analiziraj račun</button>
+    <button class="btn btn-ghost" onclick="closeM('m-scan')">Zatvori</button>
+  </div>
+</div>
+
+<!-- MODAL: Salary -->
+<div class="overlay" id="m-sal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>Mesečna plata</h2>
+    <p class="modal-sub" id="sal-sub">Koliko ti legne ovog meseca?</p>
+    <div class="inp-group">
+      <label class="inp-label">Iznos plate (RSD)</label>
+      <div class="inp-money"><span class="rp">₽</span><input class="inp" type="number" id="sal-inp" placeholder="0" min="0" inputmode="numeric"></div>
+    </div>
+    <button class="btn btn-gold" onclick="submitSalary()">Potvrdi</button>
+    <button class="btn btn-ghost" onclick="closeM('m-sal')">Odustani</button>
+  </div>
+</div>
+
+<!-- MODAL: Edit fixed -->
+<div class="overlay" id="m-fixed">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2 id="mf-title">Fiksni trošak</h2>
+    <p class="modal-sub" id="mf-month-note">Izmena važi samo za ovaj mesec</p>
+    <div class="inp-group">
+      <label class="inp-label">Naziv</label>
+      <input class="inp" type="text" id="mf-name" placeholder="Naziv troška">
+    </div>
+    <div class="inp-group">
+      <label class="inp-label">Mesečni iznos (RSD)</label>
+      <div class="inp-money"><span class="rp">₽</span><input class="inp" type="number" id="mf-amt" placeholder="0" min="0" inputmode="numeric"></div>
+    </div>
+    <button class="btn btn-gold" onclick="submitFixed()">Sačuvaj</button>
+    <button class="btn btn-ghost" onclick="closeM('m-fixed')">Odustani</button>
+  </div>
+</div>
+
+<!-- MODAL: Add entry (trošak ili prihod) -->
+<div class="overlay" id="m-entry">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2 id="mentry-title">Novi unos</h2>
+    <p class="modal-sub" id="mentry-sub"></p>
+    <div class="type-toggle">
+      <button class="tt-btn sel-exp" id="tt-exp" onclick="setEntryType('expense')">− Trošak</button>
+      <button class="tt-btn" id="tt-inc" onclick="setEntryType('income')">+ Prihod</button>
+    </div>
+    <div class="inp-group" id="entry-cat-group">
+      <label class="inp-label">Kategorija</label>
+      <div class="cat-chips" id="free-cat-chips"></div>
+    </div>
+    <div class="inp-group">
+      <label class="inp-label">Opis</label>
+      <input class="inp" type="text" id="mentry-desc" placeholder="npr. Lidl, kafić, bonus...">
+    </div>
+    <div class="inp-group">
+      <label class="inp-label">Iznos (RSD)</label>
+      <div class="inp-money"><span class="rp">₽</span><input class="inp" type="number" id="mentry-amt" placeholder="0" min="0" inputmode="numeric"></div>
+    </div>
+    <button class="btn btn-gold" id="mentry-submit-btn" onclick="submitEntry()">Dodaj trošak</button>
+    <button class="btn btn-ghost" onclick="closeM('m-entry')">Odustani</button>
+  </div>
+</div>
+
+<!-- MODAL: Manage cats -->
+<div class="overlay" id="m-cats">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>Kategorije</h2>
+    <p class="modal-sub">Uredi ili dodaj kategorije</p>
+    <div id="cats-manage-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;"></div>
+    <button class="btn btn-gold" onclick="openAddCat()">+ Nova kategorija</button>
+    <button class="btn btn-ghost" onclick="closeM('m-cats')">Zatvori</button>
+  </div>
+</div>
+
+<!-- MODAL: New/edit cat -->
+<div class="overlay" id="m-cat">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2 id="mc-title">Nova kategorija</h2>
+    <p class="modal-sub">Za slobodne troškove</p>
+    <div class="inp-group">
+      <label class="inp-label">Naziv</label>
+      <input class="inp" type="text" id="mc-name" placeholder="npr. Hrana, Izlasci, Odeća...">
+    </div>
+    <div class="inp-group">
+      <label class="inp-label">Emoji</label>
+      <div class="emoji-grid" id="mc-emoji-grid"></div>
+    </div>
+    <div class="inp-group">
+      <label class="inp-label">Boja</label>
+      <div class="color-row" id="mc-color-row"></div>
+    </div>
+    <button class="btn btn-gold" id="mc-save-btn" onclick="submitCat()">Dodaj</button>
+    <button class="btn-danger" id="mc-del-btn" onclick="deleteCat()" style="display:none">Obriši kategoriju</button>
+    <button class="btn btn-ghost" onclick="closeM('m-cat')">Odustani</button>
+  </div>
+</div>
+
+<script>
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbzJOXUjrbVbtdxMKRrEmsl_HnWdCyKMAI9-TbHmRpzE_i72tIufD1MMCzIn25vzkoZH1Q/exec';
+const MONTHS_SR=['Januar','Februar','Mart','April','Maj','Jun','Jul','Avgust','Septembar','Oktobar','Novembar','Decembar'];
+const EMOJIS=['🛒','🍕','🏠','💊','🚗','⛽','⚡','📱','🎬','👗','💄','✈️','🎁','🐾','🏋️','☕','💻','🏥','📚','🎓','💈','🌿','🍷','🎮','🧴','👟','🎵','🌸','🏖️','🎪','🍦','🎀','💅','🐕','🧹'];
+const COLORS=['#d4a853','#e05555','#5cb87a','#5b9bd5','#b87cc4','#e8835c','#4ec9c9','#e88ec4','#8ea85b','#c49a3c'];
+
+let S={
+  fixed:[
+    {id:'f1',name:'Kućni budžet',icon:'🏠',color:'#5b9bd5',amount:0},
+    {id:'f2',name:'Mama i tata',icon:'👨‍👩‍👧',color:'#e88ec4',amount:0},
+    {id:'f3',name:'Rata kredita',icon:'🏦',color:'#e05555',amount:0},
+    {id:'f4',name:'Telefon',icon:'📱',color:'#4ec9c9',amount:0},
+    {id:'f5',name:'Štednja',icon:'💰',color:'#d4a853',amount:0},
+  ],
+  freeCats:[
+    {id:'c1',name:'Hrana',icon:'🛒',color:'#5cb87a'},
+    {id:'c2',name:'Izlasci',icon:'🍷',color:'#b87cc4'},
+    {id:'c3',name:'Prevoz',icon:'🚗',color:'#e8835c'},
+    {id:'c4',name:'Ostalo',icon:'📦',color:'#8a8478'},
+  ],
+  months:{},
+  nid:1000
+};
+
+let activeFId=null,activeCId=null,selCatChip=null,selEmoji='📦',selColor=COLORS[0];
+let editCatMode=false,txViewMonth=null,saveTimer=null;
+let viewKey=null;
+let entryType='expense';
+
+// ── STORAGE ──
+function setSyncStatus(s){
+  const dot=document.getElementById('sync-dot'),lbl=document.getElementById('sync-lbl');
+  dot.className='sync-dot';
+  if(s==='syncing'){dot.classList.add('syncing');lbl.textContent='Čuvam...';}
+  else if(s==='ok'){lbl.textContent='Sinhronizovano ✓';}
+  else if(s==='error'){dot.classList.add('error');lbl.textContent='Offline — čuvam lokalno';}
+}
+function saveLocal(){try{localStorage.setItem('fin_bk',JSON.stringify(S));}catch(e){}}
+function loadLocal(){
+  try{
+    const d=localStorage.getItem('fin_bk');
+    if(d){
+      const p=JSON.parse(d);
+      if(p.fixed&&p.fixed.length>0)S.fixed=p.fixed;
+      if(p.freeCats&&p.freeCats.length>0)S.freeCats=p.freeCats;
+      if(p.months)S.months=p.months;
+      if(p.nid)S.nid=p.nid;
+      // migracija: dodaj incomes ako nema
+      Object.values(S.months).forEach(m=>{
+        if(!m.incomes)m.incomes=[];
+        if(!m.fixedOverrides)m.fixedOverrides={};
+        if(!m.fixedPaid)m.fixedPaid={};
+      });
+    }
+  }catch(e){}
+}
+async function loadData(){
+  // odmah prikaži lokalne
+  loadLocal();
+  viewKey=currentKey();txViewMonth=currentKey();
+  renderAll();
+  document.getElementById('loading-screen').style.display='none';
+  // u pozadini sinhronizuj
+  setSyncStatus('syncing');
+  try{
+    const ctrl=new AbortController();
+    const t=setTimeout(()=>ctrl.abort(),6000);
+    const r=await fetch(SCRIPT_URL+'?action=load',{cache:'no-cache',signal:ctrl.signal});
+    clearTimeout(t);
+    if(!r.ok)throw new Error();
+    const d=await r.json();
+    const sm=d&&d.months?Object.keys(d.months).length:0;
+    const lm=Object.keys(S.months).length;
+    if(d&&d.fixed&&d.fixed.length>0&&sm>=lm){
+      S.fixed=d.fixed;
+      S.freeCats=d.freeCats&&d.freeCats.length>0?d.freeCats:S.freeCats;
+      S.months=d.months||S.months;
+      S.nid=d.nid||S.nid;
+      Object.values(S.months).forEach(m=>{
+        if(!m.incomes)m.incomes=[];
+        if(!m.fixedOverrides)m.fixedOverrides={};
+        if(!m.fixedPaid)m.fixedPaid={};
+      });
+      saveLocal();renderAll();
+    }
+    setSyncStatus('ok');
+  }catch(e){setSyncStatus('error');}
+}
+async function saveData(){
+  saveLocal();setSyncStatus('syncing');
+  try{
+    const ctrl=new AbortController();
+    const t=setTimeout(()=>ctrl.abort(),8000);
+    await fetch(SCRIPT_URL+'?action=save&data='+encodeURIComponent(JSON.stringify(S)),{signal:ctrl.signal});
+    clearTimeout(t);setSyncStatus('ok');
+  }catch(e){setSyncStatus('error');}
+}
+function scheduleSave(){saveLocal();clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveData(),800);}
+
+// ── HELPERS ──
+function currentKey(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0');}
+function keyToLabel(k){if(!k)return'';const[y,m]=k.split('-');return MONTHS_SR[parseInt(m)-1]+' '+y;}
+function getMonth(k){
+  if(!S.months[k])S.months[k]={salary:0,expenses:[],incomes:[],fixedOverrides:{},fixedPaid:{}};
+  if(!S.months[k].incomes)S.months[k].incomes=[];
+  if(!S.months[k].fixedOverrides)S.months[k].fixedOverrides={};
+  if(!S.months[k].fixedPaid)S.months[k].fixedPaid={};
+  return S.months[k];
+}
+function daysLeft(k){
+  k=k||currentKey();const ck=currentKey();
+  const[y,m]=k.split('-').map(Number);
+  if(k===ck)return new Date(y,m,0).getDate()-new Date().getDate()+1;
+  if(k>ck)return new Date(y,m,0).getDate();
+  return 1;
+}
+function daysInMonth(k){const[y,m]=(k||currentKey()).split('-');return new Date(parseInt(y),parseInt(m),0).getDate();}
+function getFixedForMonth(k){
+  // Returns array of fixed items with month-specific overrides applied
+  k=k||currentKey();
+  const mo=getMonth(k);
+  return S.fixed.map(c=>{
+    const ov=mo.fixedOverrides&&mo.fixedOverrides[c.id];
+    return {...c, amount: ov!==undefined ? ov : (c.amount||0)};
+  });
+}
+function totalFixed(k){return getFixedForMonth(k||currentKey()).reduce((s,c)=>s+(c.amount||0),0);}
+function totalFixedPaid(k){
+  k=k||currentKey();
+  const mo=getMonth(k);
+  const paid=mo.fixedPaid||{};
+  return getFixedForMonth(k).filter(c=>paid[c.id]).reduce((s,c)=>s+(c.amount||0),0);
+}
+function totalFreeSpent(k){return getMonth(k||currentKey()).expenses.reduce((s,e)=>s+e.amt,0);}
+function totalExtraIncome(k){return(getMonth(k||currentKey()).incomes||[]).reduce((s,i)=>s+i.amt,0);}
+function totalIncome(k){const m=getMonth(k||currentKey());return m.salary+(m.incomes||[]).reduce((s,i)=>s+i.amt,0);}
+function freeAvailable(k){k=k||currentKey();return totalIncome(k)-totalFixed(k)-totalFreeSpent(k);}
+function dailyBudget(k){k=k||currentKey();const f=freeAvailable(k),d=daysLeft(k);return d>0?Math.round(f/d):0;}
+function fmt(n){return Math.round(n).toLocaleString('sr-RS');}
+function today(){return new Date().toLocaleDateString('sr-RS',{day:'2-digit',month:'2-digit',year:'numeric'});}
+
+// ── MONTH NAV ──
+function buildMonthNav(){
+  const ck=currentKey();
+  const[cy,cm]=ck.split('-').map(Number);
+  const keys=[];
+  for(let i=-3;i<=3;i++){
+    const d=new Date(cy,cm-1+i,1);
+    keys.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));
+  }
+  const nav=document.getElementById('month-nav');
+  nav.innerHTML=keys.map(k=>`<button class="mn-btn${k===viewKey?' active':''}${k>ck?' future':''}" onclick="switchHomeMonth('${k}')">${keyToLabel(k).split(' ')[0]}</button>`).join('');
+  setTimeout(()=>{const a=nav.querySelector('.mn-btn.active');if(a)a.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});},100);
+}
+function switchHomeMonth(k){viewKey=k;renderAll();}
+
+// ── RENDER ──
+function renderAll(){
+  if(!viewKey)viewKey=currentKey();
+  buildMonthNav();renderHero();renderFixed();renderIncomeList();renderFreeList();
+  txViewMonth=txViewMonth||currentKey();renderTx(txViewMonth);
+}
+function renderHero(){
+  const k=viewKey,ck=currentKey(),m=getMonth(k);
+  const hasSal=m.salary>0,future=k>ck;
+  document.getElementById('setup-banner').style.display=(!hasSal)?'flex':'none';
+  document.getElementById('future-banner').style.display=(future&&!hasSal)?'flex':'none';
+  // ako nema plate, ne prikazuj setup banner ako je budući mesec — samo future banner
+  if(future&&!hasSal){document.getElementById('setup-banner').style.display='none';}
+  document.getElementById('hero-card').style.display=hasSal?'block':'none';
+  document.getElementById('month-prog').style.display=(hasSal&&k===ck)?'flex':'none';
+  document.getElementById('sec-fixed-title').style.display=hasSal?'flex':'none';
+  document.getElementById('sec-income-wrap').style.display=hasSal?'block':'none';
+  document.getElementById('sec-free-wrap').style.display=hasSal?'block':'none';
+  document.getElementById('setup-sub').textContent=future?`Unesi planiranu platu za ${keyToLabel(k)}`:`Podesi mesečni prihod da kreneš`;
+  if(future&&!hasSal)document.getElementById('future-title').textContent=keyToLabel(k)+' — planiranje';
+  if(!hasSal)return;
+  const ft=totalFixed(k),fs=totalFreeSpent(k),ei=totalExtraIncome(k),fa=freeAvailable(k),daily=dailyBudget(k);
+  const dl=daysLeft(k),dim=daysInMonth(k),dp=Math.max(0,dim-dl),pct=Math.round(dp/dim*100);
+  const fpaid=totalFixedPaid(k);
+  const fixedArr=getFixedForMonth(k);
+  const paidCount=Object.values(getMonth(k).fixedPaid||{}).filter(Boolean).length;
+  // Realno stanje = plata + prihodi - placeni fiksni - slobodni troskovi
+  const realBalance=totalIncome(k)-fpaid-fs;
+
+  document.getElementById('h-free').textContent=fmt(Math.max(0,fa));
+  document.getElementById('h-real').textContent=fmt(realBalance);
+  document.getElementById('h-sal-chip').textContent=fmt(m.salary);
+  document.getElementById('h-fixed').textContent=fmt(ft);
+  document.getElementById('h-spent').textContent=fmt(fs);
+  document.getElementById('h-paid-count').textContent=paidCount;
+  document.getElementById('h-total-count').textContent=fixedArr.filter(c=>c.amount>0).length;
+  document.getElementById('h-daily').textContent=fmt(Math.max(0,daily));
+  document.getElementById('daily-wrap').style.display=hasSal?'block':'none';
+  document.getElementById('h-info-row').style.display=hasSal?'block':'none';
+  const incRow=document.getElementById('h-extra-inc-row');
+  if(ei>0){incRow.style.display='';document.getElementById('h-extra-inc').textContent=fmt(ei);}
+  else incRow.style.display='none';
+  if(future){
+    document.getElementById('h-days').textContent=dim;
+    document.getElementById('h-days-lbl').innerHTML='dana u<br>mesecu';
+    document.getElementById('dl-lbl-txt').textContent='Planirani dnevni';
+  }else{
+    document.getElementById('h-days').textContent=dl;
+    document.getElementById('h-days-lbl').innerHTML='dana do<br>kraja meseca';
+    document.getElementById('dl-lbl-txt').textContent='Dnevni budžet';
+  }
+  document.getElementById('pg-lbl').textContent=dp+'. dan';
+  document.getElementById('pg-fill').style.width=pct+'%';
+  document.getElementById('pg-pct').textContent=pct+'%';
+}
+function renderFixed(){
+  const k=viewKey,dim=daysInMonth(k),dl=daysLeft(k),pct=Math.min(100,Math.round(Math.max(0,dim-dl)/dim*100));
+  const mo=getMonth(k);
+  const fixedArr=getFixedForMonth(k);
+  const paid=mo.fixedPaid||{};
+  document.getElementById('fixed-list').innerHTML=fixedArr.map(c=>{
+    const isPaid=!!paid[c.id];
+    return`<div class="fixed-card${isPaid?' paid':''}">
+      <button class="fixed-paid-btn${isPaid?' checked':''}" onclick="toggleFixedPaid('${c.id}')" title="${isPaid?'Plaćeno — klikni da ponistiš':'Označi kao plaćeno'}">${isPaid?'✓':''}</button>
+      <div class="fixed-icon" style="background:${c.color}20">${c.icon}</div>
+      <div class="fixed-info">
+        <div class="fixed-name" style="${isPaid?'text-decoration:line-through;opacity:.6':''}">${c.name}</div>
+        <div class="fixed-bar-wrap">
+          <div class="fixed-bar"><div class="fixed-bar-fill" style="width:${c.amount>0?pct:0}%;background:${c.color}${isPaid?';opacity:.4':''}"></div></div>
+          <div class="fixed-bar-lbl">${isPaid?'✓ Plaćeno':c.amount>0?pct+'% meseca':'nije postavljeno'}</div>
+        </div>
+      </div>
+      <div class="fixed-amount" style="color:${c.color};${isPaid?'opacity:.5':''}">
+        ${c.amount>0?fmt(c.amount):'—'}<span class="fixed-rsd">${c.amount>0?' RSD':''}</span>
+      </div>
+      <button class="fixed-edit-btn" onclick="openEditFixed('${c.id}')" title="Uredi za ovaj mesec">✎</button>
+    </div>`;
+  }).join('');
+}
+function renderIncomeList(){
+  const k=viewKey,m=getMonth(k),el=document.getElementById('income-list');
+  if(!m.incomes||!m.incomes.length){
+    el.innerHTML='<div class="empty" style="padding:14px 0"><p style="font-size:12px;color:var(--text-dim)">Nema dodatnih prihoda. Dodaj bonus, honorar ili drugu uplatu.</p></div>';
+    return;
+  }
+  el.innerHTML=[...m.incomes].reverse().map(inc=>`
+    <div class="income-item">
+      <div class="income-icon">💚</div>
+      <div class="income-info"><div class="income-desc">${inc.desc}</div><div class="income-meta">Prihod · ${inc.date}</div></div>
+      <div class="income-amt">+${fmt(inc.amt)}</div>
+      <button class="income-del" onclick="delIncome(${inc.id},'${k}')">×</button>
+    </div>`).join('');
+}
+function renderFreeList(){
+  const k=viewKey,m=getMonth(k),el=document.getElementById('free-list');
+  if(!m.expenses.length){el.innerHTML='<div class="empty"><div class="ei">✨</div><p>Nema slobodnih troškova.<br>Dodaj klikom na + dugme.</p></div>';return;}
+  el.innerHTML=[...m.expenses].reverse().map(exp=>{
+    const cat=S.freeCats.find(c=>c.id===exp.catId)||{icon:'📦',color:'#8a8478',name:'Ostalo'};
+    return`<div class="free-item">
+      <div class="free-icon" style="background:${cat.color}20">${cat.icon}</div>
+      <div class="free-info"><div class="free-desc">${exp.desc}</div><div class="free-meta">${cat.name} · ${exp.date}</div></div>
+      <div class="free-amt">−${fmt(exp.amt)}</div>
+      <button class="free-del" onclick="delFreeExp(${exp.id},'${k}')">×</button>
+    </div>`;
+  }).join('');
+}
+function renderTx(key){
+  document.getElementById('tx-month-lbl').textContent=keyToLabel(key);
+  const m=getMonth(key),el=document.getElementById('tx-list'),all=[];
+  (m.incomes||[]).forEach(inc=>all.push({icon:'💚',color:'#5cb87a',desc:inc.desc,meta:'Prihod · '+inc.date,amt:inc.amt,type:'income',sign:'+'}));
+  const fixedArrTx=getFixedForMonth(key);
+  const paidTx=(getMonth(key).fixedPaid||{});
+  fixedArrTx.filter(c=>c.amount>0).forEach(c=>all.push({icon:c.icon,color:c.color,desc:c.name,meta:'Fiksni trošak'+(paidTx[c.id]?' · ✓ Plaćeno':''),amt:c.amount,type:'fixed',sign:'-',paid:!!paidTx[c.id]}));
+  m.expenses.forEach(exp=>{const cat=S.freeCats.find(c=>c.id===exp.catId)||{icon:'📦',color:'#8a8478',name:'Ostalo'};all.push({icon:cat.icon,color:cat.color,desc:exp.desc,meta:cat.name+' · '+exp.date,amt:exp.amt,type:'free',sign:'-'});});
+  if(!all.length){el.innerHTML='<div class="empty"><div class="ei">🧾</div><p>Nema troškova za ovaj mesec.</p></div>';return;}
+  el.innerHTML=all.map(i=>`
+    <div class="tx-item">
+      <div class="tx-icon" style="background:${i.color}20">${i.icon}</div>
+      <div class="tx-info"><div class="tx-desc">${i.desc}</div><div class="tx-meta">${i.meta}</div></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <div class="tx-amt ${i.sign==='+'?'pos':'neg'}">${i.sign==='+'?'+':'-'}${fmt(i.amt)} RSD</div>
+        <span class="badge badge-${i.type}">${i.type==='fixed'?'Fiksno':i.type==='income'?'Prihod':'Slobodno'}</span>
+      </div>
+    </div>`).join('');
+}
+function txMonthShift(dir){const[y,m]=txViewMonth.split('-').map(Number),d=new Date(y,m-1+dir,1);txViewMonth=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');renderTx(txViewMonth);}
+
+// ── STATS ──
+function renderStats(){
+  const wrap=document.getElementById('stats-wrap'),allKeys=Object.keys(S.months).filter(k=>k<=currentKey()).sort();
+  if(!allKeys.length){wrap.innerHTML='<div class="empty"><div class="ei">📊</div><p>Nema podataka još.<br>Unesi platu i troškove da vidiš statistike.</p></div>';return;}
+  wrap.innerHTML=buildInsight(allKeys)+buildCatBreakdown()+buildMonthCompare(allKeys)+buildSavings(allKeys)+buildTrend(allKeys);
+}
+function buildInsight(allKeys){
+  const k=currentKey(),m=getMonth(k);if(!m.salary)return'';
+  const fs=totalFreeSpent(k),fa=freeAvailable(k),daily=dailyBudget(k),dl=daysLeft(k),dim=daysInMonth(k),dp=dim-dl;
+  const ct={};m.expenses.forEach(e=>{ct[e.catId]=(ct[e.catId]||0)+e.amt;});
+  const topId=Object.keys(ct).sort((a,b)=>ct[b]-ct[a])[0];
+  const topCat=topId?S.freeCats.find(c=>c.id===topId):null;
+  const avg=dp>0?Math.round(fs/dp):0,onTrack=daily>=avg;
+  let msg=fa<0?`<strong>Pažnja!</strong> Prešla si slobodni budžet za <strong>${fmt(Math.abs(fa))} RSD</strong>.`
+    :onTrack?`Odlično! Trošiš <strong>${fmt(avg)} RSD/dan</strong>, budžet ti je <strong>${fmt(daily)} RSD/dan</strong>. Na dobrom si putu! 🎉`
+    :`Trošiš <strong>${fmt(avg)} RSD/dan</strong>, što je više od budžeta (<strong>${fmt(daily)} RSD/dan</strong>). Uspori malo.`;
+  if(topCat)msg+=` Najviše trošiš na <strong>${topCat.icon} ${topCat.name}</strong>.`;
+  const ei=totalExtraIncome(k);
+  if(ei>0)msg+=` Ovog meseca si prihodovala dodatnih <strong>+${fmt(ei)} RSD</strong>. 💚`;
+  return`<div class="ai-insight"><div class="ai-icon">💡</div><div class="ai-text">${msg}</div></div>`;
+}
+function buildCatBreakdown(){
+  const m=getMonth(currentKey());if(!m.expenses.length)return'';
+  const t={};m.expenses.forEach(e=>{t[e.catId]=(t[e.catId]||0)+e.amt;});
+  const total=Object.values(t).reduce((s,v)=>s+v,0);if(!total)return'';
+  const bars=Object.entries(t).sort((a,b)=>b[1]-a[1]).map(([cid,amt])=>{
+    const cat=S.freeCats.find(c=>c.id===cid)||{name:'Ostalo',icon:'📦',color:'#8a8478'};
+    return`<div class="bar-row"><div class="bar-label">${cat.icon} ${cat.name}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(amt/total*100)}%;background:${cat.color}"></div></div><div class="bar-val">${fmt(amt)} RSD</div></div>`;
+  }).join('');
+  return`<div class="stat-card"><div class="stat-title">Na šta trošim ovog meseca</div><div class="bar-chart">${bars}</div></div>`;
+}
+function buildMonthCompare(allKeys){
+  const cols=allKeys.slice(-4).map(k=>{
+    const m=getMonth(k),spent=totalFreeSpent(k)+totalFixed(k),ei=totalExtraIncome(k),saved=totalIncome(k)-spent;
+    return`<div class="mc-item"><div class="mc-month">${keyToLabel(k).split(' ')[0].substring(0,3)}</div><div class="mc-amt" style="color:var(--red)">−${fmt(spent)}</div><div class="mc-sub">potrošeno</div>${ei>0?`<div class="mc-amt" style="color:var(--green);font-size:13px;margin-top:3px">+${fmt(ei)}</div><div class="mc-sub">prihodi</div>`:''}${m.salary>0?`<div class="mc-amt" style="color:var(--gold);font-size:13px;margin-top:3px">${fmt(Math.max(0,saved))}</div><div class="mc-sub">uštedeno</div>`:''}</div>`;
+  }).join('');
+  return`<div class="stat-card"><div class="stat-title">Mesec vs mesec</div><div class="month-compare-row">${cols}</div></div>`;
+}
+function buildSavings(allKeys){
+  const rows=allKeys.filter(k=>getMonth(k).salary>0).map(k=>({k,saved:Math.max(0,totalIncome(k)-totalFreeSpent(k)-totalFixed(k))}));
+  if(!rows.length)return'';
+  const total=rows.reduce((s,r)=>s+r.saved,0),avg=Math.round(total/rows.length),max=Math.max(...rows.map(r=>r.saved),1);
+  return`<div class="stat-card"><div class="stat-title">Uštedela sam ukupno</div><div class="stat-big"><div class="stat-big-num">${fmt(total)}</div><div class="stat-big-lbl">RSD kroz ${rows.length} mesec${rows.length===1?'':'a'} · prosek ${fmt(avg)} RSD/mes</div></div>${rows.length>1?'<div class="bar-chart">'+rows.map(r=>`<div class="bar-row"><div class="bar-label">${keyToLabel(r.k).split(' ')[0].substring(0,3)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(r.saved/max*100)}%;background:var(--green)"></div></div><div class="bar-val">${fmt(r.saved)}</div></div>`).join('')+'</div>':''}</div>`;
+}
+function buildTrend(allKeys){
+  const rows=allKeys.filter(k=>getMonth(k).expenses.length>0).slice(-6);if(!rows.length)return'';
+  const data=rows.map(k=>({k,daily:Math.round(getMonth(k).expenses.reduce((s,e)=>s+e.amt,0)/daysInMonth(k))}));
+  const max=Math.max(...data.map(d=>d.daily),1);
+  return`<div class="stat-card"><div class="stat-title">Prosečna dnevna potrošnja</div><div class="bar-chart">${data.map(d=>`<div class="bar-row"><div class="bar-label">${keyToLabel(d.k).split(' ')[0].substring(0,3)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(d.daily/max*100)}%;background:var(--gold)"></div></div><div class="bar-val">${fmt(d.daily)}/dan</div></div>`).join('')}</div></div>`;
+}
+
+// ── MODALS ──
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+function openSalary(){
+  const k=viewKey,m=getMonth(k);
+  document.getElementById('sal-inp').value=m.salary||'';
+  document.getElementById('sal-sub').textContent='Koliko ti legne u '+keyToLabel(k)+'?';
+  openM('m-sal');setTimeout(()=>document.getElementById('sal-inp').focus(),300);
+}
+function submitSalary(){
+  const v=parseFloat(document.getElementById('sal-inp').value);
+  if(!v||v<=0)return;
+  getMonth(viewKey).salary=v;
+  scheduleSave();renderAll();closeM('m-sal');
+}
+function toggleFixedPaid(id){
+  const mo=getMonth(viewKey);
+  if(!mo.fixedPaid)mo.fixedPaid={};
+  mo.fixedPaid[id]=!mo.fixedPaid[id];
+  scheduleSave();renderAll();
+}
+function openEditFixed(id){
+  activeFId=id;
+  const c=S.fixed.find(x=>x.id===id);
+  const mo=getMonth(viewKey);
+  const ov=mo.fixedOverrides&&mo.fixedOverrides[id];
+  const amt=ov!==undefined?ov:c.amount;
+  document.getElementById('mf-title').textContent=c.icon+' '+c.name;
+  document.getElementById('mf-name').value=c.name;
+  document.getElementById('mf-amt').value=amt||'';
+  document.getElementById('mf-month-note').textContent='Iznos samo za '+keyToLabel(viewKey);
+  openM('m-fixed');setTimeout(()=>document.getElementById('mf-amt').focus(),300);
+}
+function submitFixed(){
+  const name=document.getElementById('mf-name').value.trim(),amt=parseFloat(document.getElementById('mf-amt').value)||0;
+  if(!name)return;
+  // Update global name
+  const c=S.fixed.find(x=>x.id===activeFId);
+  c.name=name;
+  // Save amount as month override (doesnt affect other months)
+  const mo=getMonth(viewKey);
+  if(!mo.fixedOverrides)mo.fixedOverrides={};
+  mo.fixedOverrides[activeFId]=amt;
+  scheduleSave();renderAll();closeM('m-fixed');
+}
+
+// ── ENTRY MODAL ──
+function openAddEntry(type){
+  const m=getMonth(viewKey);
+  if(!m.salary){openSalary();return;}
+  setEntryType(type||'expense');
+  document.getElementById('mentry-desc').value='';
+  document.getElementById('mentry-amt').value='';
+  const free=freeAvailable(viewKey);
+  document.getElementById('mentry-sub').textContent=
+    entryType==='income'?'Dodaje se na bilans za '+keyToLabel(viewKey):'Slobodno: '+fmt(Math.max(0,free))+' RSD';
+  openM('m-entry');setTimeout(()=>document.getElementById('mentry-desc').focus(),300);
+}
+function setEntryType(type){
+  entryType=type;
+  document.getElementById('tt-exp').className='tt-btn'+(type==='expense'?' sel-exp':'');
+  document.getElementById('tt-inc').className='tt-btn'+(type==='income'?' sel-inc':'');
+  document.getElementById('entry-cat-group').style.display=type==='expense'?'block':'none';
+  document.getElementById('mentry-title').textContent=type==='expense'?'Novi trošak':'Novi prihod';
+  const btn=document.getElementById('mentry-submit-btn');
+  btn.textContent=type==='expense'?'Dodaj trošak':'Dodaj prihod';
+  btn.className='btn '+(type==='expense'?'btn-gold':'btn-green');
+  const free=freeAvailable(viewKey);
+  document.getElementById('mentry-sub').textContent=
+    type==='income'?'Dodaje se na bilans za '+keyToLabel(viewKey):'Slobodno: '+fmt(Math.max(0,free))+' RSD';
+  if(type==='expense'){selCatChip=S.freeCats.length?S.freeCats[0].id:null;buildCatChips();}
+}
+function buildCatChips(){
+  document.getElementById('free-cat-chips').innerHTML=
+    S.freeCats.map(c=>`<button class="cat-chip ${c.id===selCatChip?'sel':''}" onclick="selChip('${c.id}')">${c.icon} ${c.name}</button>`).join('')+
+    `<button class="cat-chip" onclick="openManageCats()" style="border-style:dashed">⚙️</button>`;
+}
+function selChip(id){selCatChip=id;buildCatChips();}
+function submitEntry(){
+  const desc=document.getElementById('mentry-desc').value.trim()||(entryType==='expense'?'Trošak':'Prihod');
+  const amt=parseFloat(document.getElementById('mentry-amt').value);
+  if(!amt||amt<=0)return;
+  const k=viewKey,m=getMonth(k);
+  if(entryType==='expense'){
+    m.expenses.push({id:S.nid++,catId:selCatChip,desc,amt,date:today()});
+  }else{
+    m.incomes.push({id:S.nid++,desc,amt,date:today()});
+  }
+  scheduleSave();renderAll();closeM('m-entry');
+}
+function delFreeExp(id,key){S.months[key].expenses=S.months[key].expenses.filter(e=>e.id!==id);scheduleSave();renderAll();}
+function delIncome(id,key){if(!S.months[key]||!S.months[key].incomes)return;S.months[key].incomes=S.months[key].incomes.filter(i=>i.id!==id);scheduleSave();renderAll();}
+
+function openManageCats(){renderManageCats();openM('m-cats');}
+function renderManageCats(){
+  document.getElementById('cats-manage-list').innerHTML=S.freeCats.map(c=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface2);border-radius:10px;">
+      <div style="width:32px;height:32px;border-radius:8px;background:${c.color}20;display:flex;align-items:center;justify-content:center;font-size:17px;">${c.icon}</div>
+      <div style="flex:1;font-size:14px;font-weight:500;">${c.name}</div>
+      <button onclick="openEditCat('${c.id}')" style="background:none;border:none;color:var(--gold);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">Uredi</button>
+    </div>`).join('');
+}
+function openAddCat(){editCatMode=false;activeCId=null;selEmoji='📦';selColor=COLORS[0];document.getElementById('mc-name').value='';document.getElementById('mc-title').textContent='Nova kategorija';document.getElementById('mc-save-btn').textContent='Dodaj';document.getElementById('mc-del-btn').style.display='none';buildEmojiGrid();buildColorRow();pickEmoji(selEmoji);pickColor(selColor);openM('m-cat');}
+function openEditCat(id){editCatMode=true;activeCId=id;const c=S.freeCats.find(x=>x.id===id);selEmoji=c.icon;selColor=c.color;document.getElementById('mc-name').value=c.name;document.getElementById('mc-title').textContent='Uredi: '+c.name;document.getElementById('mc-save-btn').textContent='Sačuvaj';document.getElementById('mc-del-btn').style.display='block';buildEmojiGrid();buildColorRow();pickEmoji(selEmoji);pickColor(selColor);openM('m-cat');}
+function submitCat(){const name=document.getElementById('mc-name').value.trim();if(!name)return;if(editCatMode&&activeCId){const c=S.freeCats.find(x=>x.id===activeCId);c.name=name;c.icon=selEmoji;c.color=selColor;}else{S.freeCats.push({id:'c'+S.nid++,name,icon:selEmoji,color:selColor});}scheduleSave();renderManageCats();closeM('m-cat');}
+function deleteCat(){if(!activeCId)return;S.freeCats=S.freeCats.filter(c=>c.id!==activeCId);scheduleSave();renderManageCats();closeM('m-cat');}
+function buildEmojiGrid(){document.getElementById('mc-emoji-grid').innerHTML=EMOJIS.map(e=>`<button class="e-btn" onclick="pickEmoji('${e}')">${e}</button>`).join('');}
+function buildColorRow(){document.getElementById('mc-color-row').innerHTML=COLORS.map(c=>`<button class="c-btn" style="background:${c}" onclick="pickColor('${c}')"></button>`).join('');}
+function pickEmoji(e){selEmoji=e;document.querySelectorAll('.e-btn').forEach(b=>b.classList.toggle('sel',b.textContent===e));}
+function pickColor(c){selColor=c;document.querySelectorAll('.c-btn').forEach(b=>b.classList.toggle('sel',b.style.background===c||b.style.backgroundColor===c));}
+
+function goView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('v-'+v).classList.add('active');
+  const nb=document.getElementById('nav-'+v);if(nb)nb.classList.add('active');
+  if(v==='stats')renderStats();
+}
+
+
+// ── SCAN / API KEY ──
+function getApiKey(){return localStorage.getItem('fin_apikey')||'';}
+function saveApiKey(){
+  const v=document.getElementById('apikey-inp').value.trim();
+  if(!v||!v.startsWith('sk-')){alert('Unesi validan API ključ (počinje sa sk-)');return;}
+  localStorage.setItem('fin_apikey',v);
+  closeM('m-apikey');
+  openM('m-scan');
+}
+let scanImageBase64=null,scanSelCat=null;
+function openScan(){
+  const m=getMonth(viewKey);
+  if(!m.salary){openSalary();return;}
+  if(!getApiKey()){document.getElementById('apikey-inp').value='';openM('m-apikey');return;}
+  resetScanModal();openM('m-scan');
+}
+function resetScanModal(){
+  scanImageBase64=null;scanSelCat=S.freeCats.length?S.freeCats[0].id:null;
+  document.getElementById('scan-upload-zone').style.display='block';
+  document.getElementById('scan-preview-wrap').style.display='none';
+  document.getElementById('scan-loading').style.display='none';
+  document.getElementById('scan-result').style.display='none';
+  document.getElementById('scan-error').style.display='none';
+  document.getElementById('scan-submit-btn').style.display='none';
+  document.getElementById('scan-analyze-btn').style.display='none';
+  document.getElementById('scan-sub').textContent='Fotografisi ili uploaduj sliku racuna';
+}
+function handleScanDrop(e){
+  e.preventDefault();
+  document.getElementById('scan-upload-zone').style.borderColor='var(--border)';
+  const file=e.dataTransfer.files[0];
+  if(file&&file.type.startsWith('image/'))loadScanImage(file);
+}
+function handleScanFile(inp){const file=inp.files[0];if(file)loadScanImage(file);inp.value='';}
+function loadScanImage(file){
+  const reader=new FileReader();
+  reader.onload=function(e){
+    scanImageBase64=e.target.result.split(',')[1];
+    document.getElementById('scan-preview-img').src=e.target.result;
+    document.getElementById('scan-preview-wrap').style.display='block';
+    document.getElementById('scan-upload-zone').style.display='none';
+    document.getElementById('scan-result').style.display='none';
+    document.getElementById('scan-error').style.display='none';
+    document.getElementById('scan-submit-btn').style.display='none';
+    document.getElementById('scan-analyze-btn').style.display='block';
+  };
+  reader.readAsDataURL(file);
+}
+function clearScanPreview(){
+  scanImageBase64=null;
+  document.getElementById('scan-preview-wrap').style.display='none';
+  document.getElementById('scan-upload-zone').style.display='block';
+  document.getElementById('scan-result').style.display='none';
+  document.getElementById('scan-error').style.display='none';
+  document.getElementById('scan-submit-btn').style.display='none';
+  document.getElementById('scan-analyze-btn').style.display='none';
+}
+async function analyzeScan(){
+  if(!scanImageBase64)return;
+  document.getElementById('scan-loading').style.display='block';
+  document.getElementById('scan-analyze-btn').style.display='none';
+  document.getElementById('scan-error').style.display='none';
+  document.getElementById('scan-result').style.display='none';
+  document.getElementById('scan-submit-btn').style.display='none';
+  const cats=S.freeCats.map(c=>c.name).join(', ');
+  const prompt='Pogledaj ovaj racun i izvuci podatke u JSON formatu (samo JSON, bez objasnjenja):\n{"store":"naziv prodavnice","total":broj_u_dinarima,"category":"jedna od: '+cats+'"}\nAko podatak nije vidljiv stavi null. total mora biti broj.';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':getApiKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',max_tokens:400,
+        messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:scanImageBase64}},
+          {type:'text',text:prompt}
+        ]}]
+      })
+    });
+    if(!res.ok){const err=await res.json();throw new Error(err.error&&err.error.message?err.error.message:'API greska '+res.status);}
+    const data=await res.json();
+    const text=data.content[0].text.trim();
+    let parsed;
+    try{parsed=JSON.parse(text);}
+    catch(e){const m=text.match(/\{[\s\S]*\}/);if(m)parsed=JSON.parse(m[0]);else throw new Error('Nisam mogla da procitam odgovor.');}
+    document.getElementById('scan-desc-out').value=parsed.store||'';
+    document.getElementById('scan-amt-out').value=parsed.total||'';
+    const mc=S.freeCats.find(c=>c.name.toLowerCase()===(parsed.category||'').toLowerCase());
+    scanSelCat=mc?mc.id:(S.freeCats.length?S.freeCats[0].id:null);
+    buildScanCatChips();
+    document.getElementById('scan-loading').style.display='none';
+    document.getElementById('scan-result').style.display='block';
+    document.getElementById('scan-submit-btn').style.display='block';
+    document.getElementById('scan-sub').textContent='Proveri i koriguj po potrebi';
+  }catch(e){
+    document.getElementById('scan-loading').style.display='none';
+    document.getElementById('scan-error').style.display='block';
+    document.getElementById('scan-error').textContent='Greska: '+e.message;
+    document.getElementById('scan-analyze-btn').style.display='block';
+  }
+}
+function buildScanCatChips(){
+  document.getElementById('scan-cat-chips').innerHTML=
+    S.freeCats.map(c=>'<button class="cat-chip '+(c.id===scanSelCat?'sel':'')+'" onclick="selScanCat(\''+c.id+'\')">'+c.icon+' '+c.name+'</button>').join('');
+}
+function selScanCat(id){scanSelCat=id;buildScanCatChips();}
+function submitScan(){
+  const desc=document.getElementById('scan-desc-out').value.trim()||'Racun';
+  const amt=parseFloat(document.getElementById('scan-amt-out').value);
+  if(!amt||amt<=0){document.getElementById('scan-error').style.display='block';document.getElementById('scan-error').textContent='Unesi ispravan iznos.';return;}
+  getMonth(viewKey).expenses.push({id:S.nid++,catId:scanSelCat,desc,amt,date:today()});
+  scheduleSave();renderAll();closeM('m-scan');
+}
+
+async function init(){
+  loadLocal();
+  viewKey=currentKey();txViewMonth=currentKey();
+  renderAll();
+  document.getElementById('loading-screen').style.display='none';
+  await loadData();
+}
+init();
+</script>
+</body>
+</html>
