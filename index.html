@@ -506,10 +506,22 @@ let S={
     {id:'f5',name:'Štednja',icon:'💰',color:'#d4a853',amount:0},
   ],
   freeCats:[
-    {id:'c1',name:'Hrana',icon:'🛒',color:'#5cb87a'},
-    {id:'c2',name:'Izlasci',icon:'🍷',color:'#b87cc4'},
-    {id:'c3',name:'Prevoz',icon:'🚗',color:'#e8835c'},
-    {id:'c4',name:'Ostalo',icon:'📦',color:'#8a8478'},
+    {id:'c1',name:'Veganica',icon:'🥗',color:'#5cb87a'},
+    {id:'c2',name:'Hrana',icon:'🛒',color:'#4ec9c9'},
+    {id:'c3',name:'Pokloni',icon:'🎁',color:'#e88ec4'},
+    {id:'c4',name:'Lične sitnice',icon:'💄',color:'#b87cc4'},
+    {id:'c5',name:'Garderoba',icon:'👗',color:'#d4a853'},
+    {id:'c6',name:'Deca',icon:'🧒',color:'#5b9bd5'},
+    {id:'c7',name:'Zečevi',icon:'🐇',color:'#8ea85b'},
+    {id:'c8',name:'Gorivo',icon:'⛽',color:'#e8835c'},
+    {id:'c9',name:'Kuća',icon:'🏠',color:'#c49a3c'},
+    {id:'c10',name:'Pretplate',icon:'📱',color:'#8a8478'},
+    {id:'c11',name:'Kafić',icon:'☕',color:'#c49a3c'},
+    {id:'c12',name:'Izlasci',icon:'🍷',color:'#b87cc4'},
+    {id:'c13',name:'Zdravlje',icon:'💊',color:'#e05555'},
+    {id:'c14',name:'Sport',icon:'🏋️',color:'#5cb87a'},
+    {id:'c15',name:'Putovanja',icon:'✈️',color:'#4ec9c9'},
+    {id:'c16',name:'Ostalo',icon:'📦',color:'#8a8478'},
   ],
   months:{},
   nid:1000
@@ -778,11 +790,11 @@ function renderFreeList(){
   if(!m.expenses.length){el.innerHTML='<div class="empty"><div class="ei">✨</div><p>Nema slobodnih troškova.<br>Dodaj klikom na + dugme.</p></div>';return;}
   el.innerHTML=[...m.expenses].reverse().map(exp=>{
     const cat=S.freeCats.find(c=>c.id===exp.catId)||{icon:'📦',color:'#8a8478',name:'Ostalo'};
-    return`<div class="free-item">
+    return`<div class="free-item" onclick="openEditExp(${exp.id},'${k}')" style="cursor:pointer">
       <div class="free-icon" style="background:${cat.color}20">${cat.icon}</div>
       <div class="free-info"><div class="free-desc">${exp.desc}</div><div class="free-meta">${cat.name} · ${exp.date}</div></div>
       <div class="free-amt">−${fmt(exp.amt)}</div>
-      <button class="free-del" onclick="delFreeExp(${exp.id},'${k}')">×</button>
+      <button class="free-del" onclick="event.stopPropagation();delFreeExp(${exp.id},'${k}')">×</button>
     </div>`;
   }).join('');
 }
@@ -970,6 +982,39 @@ function submitEntry(){
   scheduleSave();renderAll();closeM('m-entry');
 }
 function delFreeExp(id,key){S.months[key].expenses=S.months[key].expenses.filter(e=>e.id!==id);scheduleSave();renderAll();}
+
+let editExpId=null,editExpKey=null,editSelCat=null;
+function openEditExp(id,key){
+  const m=getMonth(key);
+  const exp=m.expenses.find(e=>e.id===id);
+  if(!exp)return;
+  editExpId=id;editExpKey=key;
+  editSelCat=exp.catId||( S.freeCats.length?S.freeCats[0].id:null);
+  document.getElementById('medit-desc').value=exp.desc;
+  document.getElementById('medit-amt').value=exp.amt;
+  buildEditCatChips();
+  openM('m-edit-exp');
+  setTimeout(()=>document.getElementById('medit-desc').focus(),300);
+}
+function buildEditCatChips(){
+  document.getElementById('edit-cat-chips').innerHTML=
+    S.freeCats.map(c=>`<button class="cat-chip ${c.id===editSelCat?'sel':''}" onclick="selEditCat('${c.id}')">${c.icon} ${c.name}</button>`).join('');
+}
+function selEditCat(id){editSelCat=id;buildEditCatChips();}
+function submitEditExp(){
+  const desc=document.getElementById('medit-desc').value.trim()||'Trošak';
+  const amt=parseFloat(document.getElementById('medit-amt').value);
+  if(!amt||amt<=0)return;
+  const m=getMonth(editExpKey);
+  const exp=m.expenses.find(e=>e.id===editExpId);
+  if(!exp)return;
+  exp.desc=desc;exp.amt=amt;exp.catId=editSelCat;
+  scheduleSave();renderAll();closeM('m-edit-exp');
+}
+function delEditExp(){
+  delFreeExp(editExpId,editExpKey);
+  closeM('m-edit-exp');
+}
 function delIncome(id,key){if(!S.months[key]||!S.months[key].incomes)return;S.months[key].incomes=S.months[key].incomes.filter(i=>i.id!==id);scheduleSave();renderAll();}
 
 function openManageCats(){renderManageCats();openM('m-cats');}
@@ -1121,5 +1166,28 @@ async function init(){
 }
 init();
 </script>
+<!-- MODAL: Edit expense -->
+<div class="overlay" id="m-edit-exp">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>Uredi trošak</h2>
+    <p class="modal-sub">Promeni opis, iznos ili kategoriju</p>
+    <div class="inp-group">
+      <label class="inp-label">Kategorija</label>
+      <div class="cat-chips" id="edit-cat-chips"></div>
+    </div>
+    <div class="inp-group">
+      <label class="inp-label">Opis</label>
+      <input class="inp" type="text" id="medit-desc" placeholder="Opis troška">
+    </div>
+    <div class="inp-group">
+      <label class="inp-label">Iznos (RSD)</label>
+      <div class="inp-money"><span class="rp">₽</span><input class="inp" type="number" id="medit-amt" placeholder="0" min="0" inputmode="numeric"></div>
+    </div>
+    <button class="btn btn-gold" onclick="submitEditExp()">Sačuvaj izmene</button>
+    <button class="btn-danger" onclick="delEditExp()">Obriši trošak</button>
+    <button class="btn btn-ghost" onclick="closeM('m-edit-exp')">Odustani</button>
+  </div>
+</div>
 </body>
 </html>
