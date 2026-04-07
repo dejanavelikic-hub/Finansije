@@ -399,6 +399,11 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
       <label class="inp-label">Iznos plate (RSD)</label>
       <div class="inp-money"><span class="rp">₽</span><input class="inp" type="number" id="sal-inp" placeholder="0" min="0" inputmode="numeric"></div>
     </div>
+    <div class="inp-group" id="sal-until-group">
+      <label class="inp-label">Važi do (datum sledeće plate)</label>
+      <input class="inp" type="date" id="sal-until" style="font-size:15px;">
+      <div style="font-size:11px;color:var(--text-dim);margin-top:5px;" id="sal-until-hint"></div>
+    </div>
     <button class="btn btn-gold" onclick="submitSalary()">Potvrdi</button>
     <button class="btn btn-ghost" onclick="closeM('m-sal')">Odustani</button>
   </div>
@@ -538,6 +543,7 @@ function loadLocal(){
         if(!m.incomes)m.incomes=[];
         if(!m.fixedOverrides)m.fixedOverrides={};
         if(!m.fixedPaid)m.fixedPaid={};
+        // salaryUntil is optional, no default needed
       });
     }
   }catch(e){}
@@ -595,14 +601,42 @@ function getMonth(k){
   if(!S.months[k].fixedPaid)S.months[k].fixedPaid={};
   return S.months[k];
 }
+function getSalaryPeriod(k){
+  // Returns {start: Date, end: Date} for the salary period of month k
+  k=k||currentKey();
+  const mo=getMonth(k);
+  const[y,m]=k.split('-').map(Number);
+  const start=new Date(y,m-1,1);
+  let end;
+  if(mo.salaryUntil){
+    // Custom end date set by user
+    end=new Date(mo.salaryUntil);
+  } else {
+    // Default: last day of month
+    end=new Date(y,m,0);
+  }
+  return{start,end};
+}
 function daysLeft(k){
   k=k||currentKey();const ck=currentKey();
-  const[y,m]=k.split('-').map(Number);
-  if(k===ck)return new Date(y,m,0).getDate()-new Date().getDate()+1;
-  if(k>ck)return new Date(y,m,0).getDate();
-  return 1;
+  if(k<ck)return 1;
+  const{end}=getSalaryPeriod(k);
+  const today=new Date();
+  today.setHours(0,0,0,0);
+  end.setHours(0,0,0,0);
+  const diff=Math.ceil((end-today)/(1000*60*60*24))+1;
+  return Math.max(1,diff);
 }
-function daysInMonth(k){const[y,m]=(k||currentKey()).split('-');return new Date(parseInt(y),parseInt(m),0).getDate();}
+function daysInMonth(k){
+  k=k||currentKey();
+  const mo=getMonth(k);
+  if(mo.salaryUntil){
+    const{start,end}=getSalaryPeriod(k);
+    return Math.ceil((end-start)/(1000*60*60*24))+1;
+  }
+  const[y,m]=k.split('-');
+  return new Date(parseInt(y),parseInt(m),0).getDate();
+}
 function getFixedForMonth(k){
   // Returns array of fixed items with month-specific overrides applied
   k=k||currentKey();
@@ -693,6 +727,10 @@ function renderHero(){
     document.getElementById('h-days-lbl').innerHTML='dana do<br>kraja meseca';
     document.getElementById('dl-lbl-txt').textContent='Dnevni budžet';
   }
+  // Show period info
+  const{end:periodEnd}=getSalaryPeriod(k);
+  const periodEndStr=periodEnd.toLocaleDateString('sr-RS',{day:'numeric',month:'numeric'});
+  document.getElementById('h-days-lbl').innerHTML='dana do<br>'+periodEndStr+'.';
   document.getElementById('pg-lbl').textContent=dp+'. dan';
   document.getElementById('pg-fill').style.width=pct+'%';
   document.getElementById('pg-pct').textContent=pct+'%';
@@ -826,15 +864,34 @@ function closeM(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 
 function openSalary(){
-  const k=viewKey,m=getMonth(k);
-  document.getElementById('sal-inp').value=m.salary||'';
+  const k=viewKey,mo=getMonth(k);
+  document.getElementById('sal-inp').value=mo.salary||'';
   document.getElementById('sal-sub').textContent='Koliko ti legne u '+keyToLabel(k)+'?';
+  // Prefill salaryUntil
+  const[y,m]=k.split('-').map(Number);
+  let defaultUntil;
+  if(mo.salaryUntil){
+    defaultUntil=mo.salaryUntil;
+  } else {
+    // Default: suggest 10th of next month (11->10 cycle)
+    const nextM=m===12?1:m+1;
+    const nextY=m===12?y+1:y;
+    defaultUntil=nextY+'-'+String(nextM).padStart(2,'0')+'-10';
+  }
+  document.getElementById('sal-until').value=defaultUntil;
+  // Show hint
+  const endDate=new Date(defaultUntil);
+  const opts={day:'numeric',month:'long',year:'numeric'};
+  document.getElementById('sal-until-hint').textContent='Dnevni budžet se računa do ovog datuma';
   openM('m-sal');setTimeout(()=>document.getElementById('sal-inp').focus(),300);
 }
 function submitSalary(){
   const v=parseFloat(document.getElementById('sal-inp').value);
   if(!v||v<=0)return;
-  getMonth(viewKey).salary=v;
+  const mo=getMonth(viewKey);
+  mo.salary=v;
+  const until=document.getElementById('sal-until').value;
+  if(until)mo.salaryUntil=until;
   scheduleSave();renderAll();closeM('m-sal');
 }
 function toggleFixedPaid(id){
